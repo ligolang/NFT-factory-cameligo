@@ -64,7 +64,6 @@ let test =
         | Some x -> x
         in
         let owned_coll_size = List.fold (fun(acc, elt : nat * address) : nat -> acc + 1n) colls 0n in
-        //let owned_coll_size : nat = Set.size colls in 
         let () = assert (owned_coll_size = 1n) in
 
 
@@ -79,13 +78,11 @@ let test =
         let taddr_fa2_address = (Test.cast_address fa2_address : (Factory.NFT_FA2.parameter, ext_fa2_storage) typed_address) in
         let fa2_store : ext_fa2_storage = Test.get_storage taddr_fa2_address in
         let () = assert(Factory.NFT_FA2.Storage.is_owner_of fa2_store alice 1n) in
-        let () = Test.log(fa2_store) in
 
         // APPROVE marketplace to transfer token 1
         let () = Test.set_source alice in
         let marketplace_contract : Marketplace.parameter contract = Test.to_contract marketplace_taddr in
         let marketplace_addr  = Tezos.address marketplace_contract in 
-        let () = Test.log(marketplace_addr) in
         let fa2_contract : Factory.NFT_FA2.parameter contract = Test.to_contract taddr_fa2_address in
         let update_op : Factory.NFT_FA2.NFT.update_operators = [Add_operator({owner=alice; operator=marketplace_addr; token_id=1n})] in
         let _ = Test.transfer_to_contract_exn fa2_contract (Update_operators(update_op)) 0mutez in
@@ -108,7 +105,6 @@ let test =
 
         let fa2_store_after : ext_fa2_storage = Test.get_storage taddr_fa2_address in
         let () = assert(Factory.NFT_FA2.Storage.is_owner_of fa2_store_after bob 1n) in
-        let () = Test.log(fa2_store_after) in
         "OK"
     in
     ()

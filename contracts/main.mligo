@@ -1,9 +1,6 @@
 #import "storage.mligo" "Storage"
 #import "parameter.mligo" "Parameter"
 #import "generic_fa2/core/instance/NFT.mligo" "NFT_FA2"
-//#import "views.mligo" "Views"
-//#import "errors.mligo" "Errors"
-//#import "conditions.mligo" "Conditions"
 
 type storage = Storage.t
 type parameter = Parameter.t
@@ -44,11 +41,6 @@ let generateCollection(param, store : Parameter.generate_collection_param * Stor
 
     let initial_delegate : key_hash option = (None: key_hash option) in
     let initial_amount : tez = 1tez in
-    // let create_my_contract (cp: key_hash option * tez * ext_storage) : (operation * address) = 
-    //   let func : fa2_main = (fun((p, s): NFT_FA2.parameter * ext_storage) -> (NFT_FA2.main : fa2_main)(p, s)) in
-    //   Tezos.create_contract func cp.0 cp.1 cp.2
-    // in
-    // let originate : operation * address = create_my_contract(initial_delegate, initial_amount, initial_storage) in
     let create_my_contract : lambda_create_contract =
       [%Michelson ( {| { 
             UNPAIR ;

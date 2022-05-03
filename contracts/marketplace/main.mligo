@@ -25,15 +25,6 @@ let create_sell_proposal(param, store : Parameter.sell_proposal_param * Storage.
     let new_next_sell_id : nat = store.next_sell_id + 1n in 
     let new_active_proposals : nat set = Set.add store.next_sell_id store.active_proposals in 
 
-    // approve this contract as operator
-    //let collection_approve_dest_opt : NFT_FA2.update_operators contract option = Tezos.get_entrypoint_opt "%update_operators" param.collectionContract in
-    //let collection_approve_dest : NFT_FA2.update_operators contract = match collection_approve_dest_opt with
-    //| None -> (failwith(Errors.unknown_fa2_contract): NFT_FA2.update_operators contract) 
-    //| Some ct -> ct
-    //in
-    //let update_op : NFT_FA2.update_operators = [Add_operator({owner=Tezos.sender; operator=Tezos.self_address; token_id=param.token_id})] in
-    //let op : operation = Tezos.transaction update_op 0mutez collection_approve_dest in
-
     (([] : operation list), { store with next_sell_id=new_next_sell_id; sell_proposals=new_proposals; active_proposals=new_active_proposals })
 
 
@@ -58,16 +49,6 @@ let accept_proposal(param, store : Parameter.buy_param * Storage.t) : return =
     in
     let op : operation = Tezos.transaction unit Tezos.amount destination in
     
-    // unapprove this contract as operator
-    //let collection_approve_dest_opt : NFT_FA2.update_operators contract option = Tezos.get_entrypoint_opt "%update_operators" propal.collectionContract in 
-    //let collection_approve_dest : NFT_FA2.update_operators contract = match collection_approve_dest_opt with
-    //| None -> (failwith(Errors.unknown_fa2_contract): NFT_FA2.update_operators contract) 
-    //| Some ct -> ct
-    //in
-    //let update_op : NFT_FA2.update_operators = [Remove_operator({owner=propal.owner; operator=Tezos.self_address; token_id=propal.token_id})] in
-    //let op1 : operation = Tezos.transaction update_op 0mutez collection_approve_dest in
-
-
     // transfer Nft to new_owner
     let collection_transfer_dest_opt : NFT_FA2.NFT.transfer contract option = Tezos.get_entrypoint_opt "%transfer" propal.collectionContract in
     let collection_transfer_dest : NFT_FA2.NFT.transfer contract = match collection_transfer_dest_opt with
