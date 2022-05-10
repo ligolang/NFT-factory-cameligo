@@ -25,6 +25,7 @@ let test =
     let init_storage : Factory.Storage.t = { 
         all_collections=(Big_map.empty : (Factory.Storage.collectionContract, Factory.Storage.collectionOwner) big_map);
         owned_collections=(Big_map.empty : (Factory.Storage.collectionOwner, Factory.Storage.collectionContract list) big_map);
+        metadata=(Big_map.empty: (string, bytes) big_map);
     } in
     let (addr,_,_) = Test.originate Factory.main init_storage 0tez in
 
