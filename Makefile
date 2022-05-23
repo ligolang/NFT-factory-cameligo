@@ -31,10 +31,12 @@ factory.json: contracts/main.mligo
 
 fa2_nft.tz: contracts/generic_fa2/core/instance/NFT.mligo
 	@echo "Compiling smart contract FA2 to Michelson"
+	@mkdir -p contracts/generic_fa2/compiled
 	@$(ligo_compiler) compile contract $^ -e main $(PROTOCOL_OPT) $(PROJECTROOT_OPT) > contracts/generic_fa2/compiled/$@
 
 marketplace_nft.tz: contracts/marketplace/main.mligo
 	@echo "Compiling smart contract Marketplace to Michelson"
+	@mkdir -p contracts/marketplace/compiled
 	@$(ligo_compiler) compile contract $^ -e main $(PROTOCOL_OPT) $(PROJECTROOT_OPT) > contracts/marketplace/compiled/$@
 
 clean: clean_contracts clean_fa2 clean_marketplace
