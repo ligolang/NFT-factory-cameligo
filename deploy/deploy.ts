@@ -19,6 +19,7 @@ async function orig() {
     let factory_store = {
         'all_collections' : new MichelsonMap(),
         'owned_collections': new MichelsonMap(), 
+        'metadata': new MichelsonMap()
     }
 
     try {
