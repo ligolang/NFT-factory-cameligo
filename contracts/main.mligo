@@ -16,8 +16,9 @@ type fa2_main = (NFT_FA2.parameter * ext_storage) -> (operation list * ext_stora
 let generateCollection(param, store : Parameter.generate_collection_param * Storage.t) : return = 
     // create new collection
     let token_ids = param.token_ids in
+    let sender = Tezos.get_sender () in
     let ledger = (Big_map.empty : NFT_FA2.Storage.Ledger.t) in
-    let myfunc(acc, elt : NFT_FA2.Storage.Ledger.t * nat) : NFT_FA2.Storage.Ledger.t = Big_map.add elt Tezos.sender acc in
+    let myfunc(acc, elt : NFT_FA2.Storage.Ledger.t * nat) : NFT_FA2.Storage.Ledger.t = Big_map.add elt sender acc in
     let new_ledger : NFT_FA2.Storage.Ledger.t = List.fold myfunc token_ids ledger in
 
     let token_usage = (Big_map.empty : NFT_FA2.TokenUsage.t) in
@@ -34,7 +35,7 @@ let generateCollection(param, store : Parameter.generate_collection_param * Stor
         token_ids=token_ids;
         token_metadata=token_metadata;
         extension = {
-          admin=Tezos.sender;
+          admin=sender;
           token_usage=new_token_usage;
         }
     }  in 
@@ -53,11 +54,11 @@ let generateCollection(param, store : Parameter.generate_collection_param * Stor
     in
     let originate : operation * address = create_my_contract(initial_delegate, initial_amount, initial_storage) in
     // insert into collections
-    let new_all_collections = Big_map.add originate.1 Tezos.sender store.all_collections in
+    let new_all_collections = Big_map.add originate.1 sender store.all_collections in
     // insert into owned_collections
-    let new_owned_collections = match Big_map.find_opt Tezos.sender store.owned_collections with
-    | None -> Big_map.add Tezos.sender ([originate.1]: address list) store.owned_collections
-    | Some addr_lst -> Big_map.update Tezos.sender (Some(originate.1 :: addr_lst)) store.owned_collections
+    let new_owned_collections = match Big_map.find_opt sender store.owned_collections with
+    | None -> Big_map.add sender ([originate.1]: address list) store.owned_collections
+    | Some addr_lst -> Big_map.update sender (Some(originate.1 :: addr_lst)) store.owned_collections
     in
     ([originate.0], { store with all_collections=new_all_collections; owned_collections=new_owned_collections})
 

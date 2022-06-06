@@ -9,7 +9,7 @@ type return = operation list * storage
 
 let create_sell_proposal(param, store : Parameter.sell_proposal_param * Storage.t) : return = 
     // check if sender is the owner of the nft token
-    let balanceOpt : nat option = Tezos.call_view "get_balance" (Tezos.sender, param.token_id) param.collectionContract in
+    let balanceOpt : nat option = Tezos.call_view "get_balance" (Tezos.get_sender (), param.token_id) param.collectionContract in
     let balanceVal : nat = match balanceOpt with
     | None -> (failwith(Errors.unknownViewGetBalance) : nat)
     | Some (v) -> v
@@ -21,7 +21,7 @@ let create_sell_proposal(param, store : Parameter.sell_proposal_param * Storage.
     in
     let _check_owner : unit = assert_with_error (balanceVal = 1n) Errors.not_owner in
     // Add new proposal
-    let new_proposals = Big_map.add store.next_sell_id { owner=Tezos.sender; token_id=param.token_id; collectionContract=param.collectionContract; active=true; price=param.price; hasard_level=usageVal } store.sell_proposals in
+    let new_proposals = Big_map.add store.next_sell_id { owner=Tezos.get_sender (); token_id=param.token_id; collectionContract=param.collectionContract; active=true; price=param.price; hasard_level=usageVal } store.sell_proposals in
     let new_next_sell_id : nat = store.next_sell_id + 1n in 
     let new_active_proposals : nat set = Set.add store.next_sell_id store.active_proposals in 
 
@@ -35,7 +35,7 @@ let accept_proposal(param, store : Parameter.buy_param * Storage.t) : return =
     | Some pr -> pr
     in
     let _check_status : unit = assert_with_error(propal.active) Errors.proposal_not_active in
-    let _check_amount : unit = assert_with_error(propal.price = Tezos.amount) Errors.wrong_amount in
+    let _check_amount : unit = assert_with_error(propal.price = (Tezos.get_amount ())) Errors.wrong_amount in
     
     let new_propal = { propal with active=false } in
     let new_active_proposals : nat set = Set.remove param.proposal_id store.active_proposals in
@@ -47,7 +47,7 @@ let accept_proposal(param, store : Parameter.buy_param * Storage.t) : return =
     | None -> (failwith("Unknwon owner"): unit contract) 
     | Some c -> c
     in
-    let op : operation = Tezos.transaction unit Tezos.amount destination in
+    let op : operation = Tezos.transaction unit (Tezos.get_amount ()) destination in
     
     // transfer Nft to new_owner
     let collection_transfer_dest_opt : NFT_FA2.NFT.transfer contract option = Tezos.get_entrypoint_opt "%transfer" propal.collectionContract in
@@ -55,7 +55,7 @@ let accept_proposal(param, store : Parameter.buy_param * Storage.t) : return =
     | None -> (failwith(Errors.unknown_fa2_contract): NFT_FA2.NFT.transfer contract) 
     | Some ct -> ct
     in
-    let nft_transfer : NFT_FA2.NFT.transfer = [{from_=propal.owner; tx=[{to_=Tezos.sender; token_id=propal.token_id}]}] in
+    let nft_transfer : NFT_FA2.NFT.transfer = [{from_=propal.owner; tx=[{to_=Tezos.get_sender (); token_id=propal.token_id}]}] in
     let op2 : operation = Tezos.transaction nft_transfer 0mutez collection_transfer_dest in
     
     ([op; op2;], { store with sell_proposals=new_proposals; active_proposals=new_active_proposals })
