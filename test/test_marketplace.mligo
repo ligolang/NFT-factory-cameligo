@@ -10,7 +10,7 @@ let assert_string_failure (res : test_exec_result) (expected : string) : unit =
   let expected = Test.eval expected in
   match res with
   | Fail (Rejected (actual,_)) -> assert (Test.michelson_equal actual expected)
-  | Fail (Balance_too_low p) -> failwith "contract failed: balance too low"
+  | Fail (Balance_too_low _) -> failwith "contract failed: balance too low"
   | Fail (Other s) -> failwith s
   | Success _gas -> failwith "contract did not failed but was expected to fail"
 
@@ -19,8 +19,8 @@ let test =
     let () = Test.reset_state 4n ([] : tez list) in
     let alice: address = Test.nth_bootstrap_account 0 in
     let bob: address = Test.nth_bootstrap_account 1 in
-    let steven: address = Test.nth_bootstrap_account 2 in
-    let frank: address = Test.nth_bootstrap_account 3 in
+    let _steven: address = Test.nth_bootstrap_account 2 in
+    let _frank: address = Test.nth_bootstrap_account 3 in
 
     // originate Factory smart contract
     let init_storage : Factory.Storage.t = { 
@@ -64,7 +64,7 @@ let test =
         | None -> ([] : address list)
         | Some x -> x
         in
-        let owned_coll_size = List.fold (fun(acc, elt : nat * address) : nat -> acc + 1n) colls 0n in
+        let owned_coll_size = List.fold (fun(acc, _elt : nat * address) : nat -> acc + 1n) colls 0n in
         let () = assert (owned_coll_size = 1n) in
 
 
