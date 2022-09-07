@@ -11,7 +11,6 @@ const Tezos = new TezosToolkit(rpc);
 const signer = new InMemorySigner(pk);
 Tezos.setProvider({ signer: signer })
 
-const admin = process.env.ADMIN_ADDRESS;
 let factory_address = process.env.FACTORY_CONTRACT_ADDRESS || undefined;
 
 async function orig() {
@@ -40,6 +39,7 @@ async function orig() {
 
     } catch (error: any) {
         console.log(error)
+        return process.exit(1)
     }
 }
 
