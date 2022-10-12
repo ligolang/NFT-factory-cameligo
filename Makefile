@@ -3,7 +3,7 @@ ligo_compiler?=docker run --rm -v "$(PWD)":"$(PWD)" -w "$(PWD)" ligolang/ligo:st
 # ^ Otherwise use default one (you'll need docker)
 # ligo_compiler=../../../ligo
 PROJECTROOT_OPT=--project-root .
-PROTOCOL_OPT?=
+protocol_opt?=
 JSON_OPT?=--michelson-format json
 tsc=npx tsc
 help:
@@ -24,22 +24,22 @@ factory: factory.tz factory.json
 factory.tz: contracts/main.mligo
 	@echo "Compiling smart contract to Michelson"
 	@mkdir -p compiled
-	@$(ligo_compiler) compile contract $^ -e main $(PROTOCOL_OPT) $(PROJECTROOT_OPT) > compiled/$@
+	@$(ligo_compiler) compile contract $^ -e main $(protocol_opt) $(PROJECTROOT_OPT) > compiled/$@
 
 factory.json: contracts/main.mligo
 	@echo "Compiling smart contract to Michelson in JSON format"
 	@mkdir -p compiled
-	@$(ligo_compiler) compile contract $^ $(JSON_OPT) -e main $(PROTOCOL_OPT) $(PROJECTROOT_OPT) > compiled/$@
+	@$(ligo_compiler) compile contract $^ $(JSON_OPT) -e main $(protocol_opt) $(PROJECTROOT_OPT) > compiled/$@
 
 fa2_nft.tz: contracts/generic_fa2/core/instance/NFT.mligo
 	@echo "Compiling smart contract FA2 to Michelson"
 	@mkdir -p contracts/generic_fa2/compiled
-	@$(ligo_compiler) compile contract $^ -e main $(PROTOCOL_OPT) $(PROJECTROOT_OPT) > contracts/generic_fa2/compiled/$@
+	@$(ligo_compiler) compile contract $^ -e main $(protocol_opt) $(PROJECTROOT_OPT) > contracts/generic_fa2/compiled/$@
 
 marketplace_nft.tz: contracts/marketplace/main.mligo
 	@echo "Compiling smart contract Marketplace to Michelson"
 	@mkdir -p contracts/marketplace/compiled
-	@$(ligo_compiler) compile contract $^ -e main $(PROTOCOL_OPT) $(PROJECTROOT_OPT) > contracts/marketplace/compiled/$@
+	@$(ligo_compiler) compile contract $^ -e main $(protocol_opt) $(PROJECTROOT_OPT) > contracts/marketplace/compiled/$@
 
 clean: clean_contracts clean_fa2 clean_marketplace
 
@@ -60,11 +60,11 @@ test: test_ligo test_marketplace
 
 test_ligo: test/test.mligo
 	@echo "Running integration tests"
-	@$(ligo_compiler) run test $^ $(PROTOCOL_OPT) $(PROJECTROOT_OPT)
+	@$(ligo_compiler) run test $^ $(protocol_opt) $(PROJECTROOT_OPT)
 
 test_marketplace: test/test_marketplace.mligo
 	@echo "Running integration tests (marketplace)"
-	@$(ligo_compiler) run test $^ $(PROTOCOL_OPT) $(PROJECTROOT_OPT)
+	@$(ligo_compiler) run test $^ $(protocol_opt) $(PROJECTROOT_OPT)
 
 deploy: deploy_node_modules deploy.js
 	@echo "Deploying contract"
