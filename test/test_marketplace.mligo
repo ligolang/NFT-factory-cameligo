@@ -85,7 +85,7 @@ let test =
         let marketplace_contract : Marketplace.parameter contract = Test.to_contract marketplace_taddr in
         let marketplace_addr  = Tezos.address marketplace_contract in 
         let fa2_contract : Factory.NFT_FA2.parameter contract = Test.to_contract taddr_fa2_address in
-        let update_op : Factory.NFT_FA2.NFT.update_operators = [Add_operator({owner=alice; operator=marketplace_addr; token_id=1n})] in
+        let update_op = [(Add_operator({owner=alice; operator=marketplace_addr; token_id=1n}) : Factory.NFT_FA2.NFT.unit_update)] in
         let _ = Test.transfer_to_contract_exn fa2_contract (Update_operators(update_op)) 0mutez in
 
         // alice Sell token1
