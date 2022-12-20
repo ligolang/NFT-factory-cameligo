@@ -2,36 +2,45 @@
 
 This contract implements a factory of FA2 NFT. Each FA2 contract represents a collection of wine bottles. Wine bottles are represented by tokens inside a FA2 contract.
 When originating a collection of bottle,
+
 - the creator must specify a collection name and a QR code for each bottle.
 - the creator owns all bottles of the collection
 
-The creator of the collection can also add new bottles to his collection anytime (with the *Mint* entrypoint)
+The creator of the collection can also add new bottles to his collection anytime (with the _Mint_ entrypoint)
 
-A bottle owner can transfer one or more bottle to someone else (with the *Transfer* entrypoint)
-
+A bottle owner can transfer one or more bottle to someone else (with the _Transfer_ entrypoint)
 
 A collection of bottles is represented by a FA2 contract. The implementation of the FA2 introduces:
+
 - a admin address on the storage which represents the creator of the FA2 contract
-- a *Mint* entrypoint that allows the creator of the FA2 to create new tokens inside the NFT contract
-- a *token_usage* map that count the number of transfer of a bottle
-- a *token_usage* view for retrieving the number of transfer of a bottle (for a given token_id)
+- a _Mint_ entrypoint that allows the creator of the FA2 to create new tokens inside the NFT contract
+- a _token_usage_ map that count the number of transfer of a bottle
+- a _token_usage_ view for retrieving the number of transfer of a bottle (for a given token_id)
 
-![](wine_factory.png)
-
+![](assets/wine_factory.png)
 
 An extra Marketplace smart contract has been provided to illustrate how to make a secondary market on these Nft. The Marketplace contract allows Nft owners to sell their wine bottles on a secondary market. The Marketplace contract allows users to accept a sell proposal.
 The Marketplace smart contract is not meant for production purpose.
 
+## Pre-requisites
+
+You need to install the following tools:
+
+- [NodeJS & Npm](https://nodejs.org/en/download/)
+- [LIGO](https://ligolang.org/docs/intro/installation/) **or** [Docker](https://docs.docker.com/get-docker/)
+
+## How to use this template ?
+
 ### Compilation
 
-A makefile is provided to compile the "Factory" smart contract, and to launch tests.
+A makefile is provided to compile the "Factory" smart contract.
+
 ```
-cd src/cameligo/
 make compile
-make test
 ```
 
 You can also override `make` parameters by running :
+
 ```sh
 make compile ligo_compiler=<LIGO_EXECUTABLE> protocol_opt="--protocol <PROTOCOL>"
 ```
@@ -39,8 +48,8 @@ make compile ligo_compiler=<LIGO_EXECUTABLE> protocol_opt="--protocol <PROTOCOL>
 ### Tests
 
 A makefile is provided to launch tests.
+
 ```
-cd src/cameligo/
 make test
 ```
 

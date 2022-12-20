@@ -1,0 +1,19 @@
+{
+    "name": "NFT Factory Example",
+    "description": "This repository is meant to illustrate how to create NFT on Tezos",
+    "version": "1.0.0",
+    "license": {
+        "name": "MIT"
+    },
+    "authors": [
+        "smart-chain <tezos@smart-chain.fr>"
+    ],
+    "homepage": "https://github.com/ligolang/nft-factory-cameligo",
+    "source": {
+        "tools": "cameligo",
+        "location": "https://github.com/ligolang/nft-factory-cameligo"
+    },
+    "interfaces": [
+        "TZIP-016"
+    ]
+}
