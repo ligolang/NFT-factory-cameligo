@@ -1,5 +1,5 @@
 
-#import "../contracts/main.mligo" "Factory"
+#import "../src/main.mligo" "Factory"
 
 type fa2_storage = Factory.NFT_FA2.Storage.t
 type ext = Factory.NFT_FA2.extension
