@@ -1,6 +1,9 @@
 {
   "name": "nft-factory-cameligo",
   "version": "1.0.0",
+  "type": "contract",
+  "storage_fn": "Storage.initial_storage",
+  "storage_arg": "()",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com:ligolang/NFT-factory-cameligo.git"
