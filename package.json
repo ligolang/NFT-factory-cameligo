@@ -1,0 +1,21 @@
+{
+  "name": "nft-factory-cameligo",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:ligolang/NFT-factory-cameligo.git"
+  },
+  "author": "ligoLANG <https://ligolang.org/>",
+  "main": "src/main.mligo",
+  "license": "MIT",
+  "description": "An example of NFT factory contract written in cameligo",
+  "bugs": {
+    "url": "https://github.com/ligolang/NFT-factory-cameligo/issues"
+  },
+  "homepage": "https://github.com/ligolang/NFT-factory-cameligo#readme",
+  "keywords": [
+    "tezos",
+    "ligo",
+    "blockchain"
+  ]
+}
