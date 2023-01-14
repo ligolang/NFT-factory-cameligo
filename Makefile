@@ -18,6 +18,7 @@ help:
 
 all: clean compile test
 
+.PHONY: all compile test deploy clean
 compile: fa2_nft.tz factory marketplace_nft.tz
 
 factory: factory.tz factory.json
