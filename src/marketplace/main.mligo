@@ -60,7 +60,7 @@ let accept_proposal(param, store : Parameter.buy_param * Storage.t) : return =
     
     ([op; op2;], { store with sell_proposals=new_proposals; active_proposals=new_active_proposals })
 
-let main(ep, store : parameter * storage) : return =
+let main (ep : parameter) (store : storage) : return =
     match ep with 
     | Sell p -> create_sell_proposal(p, store)
     | Buy p -> accept_proposal(p, store)

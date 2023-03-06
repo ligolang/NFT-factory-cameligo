@@ -63,7 +63,7 @@ let generateCollection(param, store : Parameter.generate_collection_param * Stor
     ([originate.0], { store with all_collections=new_all_collections; owned_collections=new_owned_collections})
 
 
-let main(ep, store : parameter * storage) : return =
+let main (ep : parameter) (store : storage) : return =
     match ep with 
     | GenerateCollection(p) -> generateCollection(p, store)
     | Nothing -> (([] : operation list), store)
