@@ -1,7 +1,8 @@
-ligo_compiler?=docker run --rm -v "$(PWD)":"$(PWD)" -w "$(PWD)" ligolang/ligo:stable
+LIGO_COMPILER?=ligo
 # ^ Override this variable when you run make command by make <COMMAND> ligo_compiler=<LIGO_EXECUTABLE>
-# ^ Otherwise use default one (you'll need docker)
-# ligo_compiler=../../../ligo
+# ^ Otherwise use default one
+# Example to use Docker-provided Ligo compiler:
+# make compile LIGO_COMPILER='docker run --rm -v "$(PWD)":"$(PWD)" -w "$(PWD)" ligolang/ligo:stable'
 PROJECTROOT_OPT=--project-root .
 protocol_opt?=
 JSON_OPT?=--michelson-format json
@@ -17,6 +18,7 @@ help:
 
 all: clean compile test
 
+.PHONY: all compile test deploy clean
 compile: fa2_nft.tz factory marketplace_nft.tz
 
 factory: factory.tz factory.json
@@ -24,22 +26,22 @@ factory: factory.tz factory.json
 factory.tz: src/main.mligo
 	@echo "Compiling smart contract to Michelson"
 	@mkdir -p compiled
-	@$(ligo_compiler) compile contract $^ -e main $(protocol_opt) $(PROJECTROOT_OPT) > compiled/$@
+	@$(LIGO_COMPILER) compile contract $^ -e main $(protocol_opt) $(PROJECTROOT_OPT) > compiled/$@
 
 factory.json: src/main.mligo
 	@echo "Compiling smart contract to Michelson in JSON format"
 	@mkdir -p compiled
-	@$(ligo_compiler) compile contract $^ $(JSON_OPT) -e main $(protocol_opt) $(PROJECTROOT_OPT) > compiled/$@
+	@$(LIGO_COMPILER) compile contract $^ $(JSON_OPT) -e main $(protocol_opt) $(PROJECTROOT_OPT) > compiled/$@
 
 fa2_nft.tz: src/generic_fa2/core/instance/NFT.mligo
 	@echo "Compiling smart contract FA2 to Michelson"
 	@mkdir -p src/generic_fa2/compiled
-	@$(ligo_compiler) compile contract $^ -e main $(protocol_opt) $(PROJECTROOT_OPT) > src/generic_fa2/compiled/$@
+	@$(LIGO_COMPILER) compile contract $^ -e main $(protocol_opt) $(PROJECTROOT_OPT) > src/generic_fa2/compiled/$@
 
 marketplace_nft.tz: src/marketplace/main.mligo
 	@echo "Compiling smart contract Marketplace to Michelson"
 	@mkdir -p src/marketplace/compiled
-	@$(ligo_compiler) compile contract $^ -e main $(protocol_opt) $(PROJECTROOT_OPT) > src/marketplace/compiled/$@
+	@$(LIGO_COMPILER) compile contract $^ -e main $(protocol_opt) $(PROJECTROOT_OPT) > src/marketplace/compiled/$@
 
 clean: clean_contracts clean_fa2 clean_marketplace
 
@@ -60,11 +62,11 @@ test: test_ligo test_marketplace
 
 test_ligo: test/test.mligo
 	@echo "Running integration tests"
-	@$(ligo_compiler) run test $^ $(protocol_opt) $(PROJECTROOT_OPT)
+	@$(LIGO_COMPILER) run test $^ $(protocol_opt) $(PROJECTROOT_OPT)
 
 test_marketplace: test/test_marketplace.mligo
 	@echo "Running integration tests (marketplace)"
-	@$(ligo_compiler) run test $^ $(protocol_opt) $(PROJECTROOT_OPT)
+	@$(LIGO_COMPILER) run test $^ $(protocol_opt) $(PROJECTROOT_OPT)
 
 deploy: node_modules deploy.js
 
