@@ -10,9 +10,6 @@ type store = NFT_FA2.Storage.t
 type ext = NFT_FA2.extension
 type ext_storage = ext store
 
-type lambda_create_contract = (key_hash option * tez * ext_storage) -> (operation * address) 
-type fa2_main = (NFT_FA2.parameter * ext_storage) -> (operation list * ext_storage)
-
 let generateCollection(param, store : Parameter.generate_collection_param * Storage.t) : return = 
     // create new collection
     let token_ids = param.token_ids in
@@ -42,17 +39,8 @@ let generateCollection(param, store : Parameter.generate_collection_param * Stor
 
     let initial_delegate : key_hash option = (None: key_hash option) in
     let initial_amount : tez = 1tez in
-    let create_my_contract : lambda_create_contract =
-      [%Michelson ( {| { 
-            UNPAIR ;
-            UNPAIR ;
-            CREATE_CONTRACT 
-#include "generic_fa2/compiled/fa2_nft.tz"  
-               ;
-            PAIR } |}
-              : lambda_create_contract)]
-    in
-    let originate : operation * address = create_my_contract(initial_delegate, initial_amount, initial_storage) in
+    let create_my_contract = [%create_contract_of_file "generic_fa2/compiled/fa2_nft.tz"] in
+    let originate : operation * address = create_my_contract initial_delegate initial_amount initial_storage in
     // insert into collections
     let new_all_collections = Big_map.add originate.1 sender store.all_collections in
     // insert into owned_collections
