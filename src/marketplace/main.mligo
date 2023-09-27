@@ -60,18 +60,17 @@ let accept_proposal(param, store : Parameter.buy_param * Storage.t) : return =
     
     ([op; op2;], { store with sell_proposals=new_proposals; active_proposals=new_active_proposals })
 
+[@entry]
 let main (ep : parameter) (store : storage) : return =
     match ep with 
     | Sell p -> create_sell_proposal(p, store)
     | Buy p -> accept_proposal(p, store)
 
-[@view] let get_proposal : (nat * storage) -> Storage.sell_proposal = 
-   fun ((p, s) : (nat * storage)) -> 
+[@view] let get_proposal (p : nat) (s : storage) : Storage.sell_proposal = 
       match Big_map.find_opt p s.sell_proposals with 
       | None -> (failwith("") : Storage.sell_proposal)
       | Some prop -> prop 
 
-[@view] let active_proposals : (unit * storage) -> nat list = 
-    fun ((_p, s) : (unit * storage)) -> 
+[@view] let active_proposals (_ : unit) (s : storage) : nat list = 
         Set.fold (fun(acc, i : nat list * nat) -> i :: acc) s.active_proposals ([] : nat list)
           

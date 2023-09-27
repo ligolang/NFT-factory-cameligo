@@ -1,0 +1,15 @@
+{
+  "checksum": "0cc961f41dbf4ff5ab5654751a4ba36e",
+  "root": "nft-factory-cameligo@link-dev:./ligo.json",
+  "node": {
+    "nft-factory-cameligo@link-dev:./ligo.json": {
+      "id": "nft-factory-cameligo@link-dev:./ligo.json",
+      "name": "nft-factory-cameligo",
+      "version": "link-dev:./ligo.json",
+      "source": { "type": "link-dev", "path": ".", "manifest": "ligo.json" },
+      "overrides": [],
+      "dependencies": [],
+      "devDependencies": []
+    }
+  }
+}
