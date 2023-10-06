@@ -28,7 +28,8 @@ let test =
         owned_collections=(Big_map.empty : (Factory.Storage.collectionOwner, Factory.Storage.collectionContract list) big_map);
         metadata=(Big_map.empty: (string, bytes) big_map);
     } in
-    let (addr,_,_) = Test.originate Factory.main init_storage 0tez in
+    let orig = Test.originate_from_file "../src/main.mligo" init_storage 0tez in
+    let addr = orig.addr in
 
     // originate Marketplace smart contract
     let marketplace_init_storage : Marketplace.Storage.t = { 
@@ -36,13 +37,11 @@ let test =
         active_proposals=(Set.empty : nat set);
         sell_proposals=(Big_map.empty : (nat, Marketplace.Storage.sell_proposal) big_map);
     } in
-    let (marketplace_taddr,_,_) = Test.originate Marketplace.main marketplace_init_storage 0tez in
-
+    let orig = Test.originate_from_file "../src/marketplace/main.mligo" marketplace_init_storage 0tez in
+    let marketplace_taddr = orig.addr in
 
     let _generates_collection_1_should_works = 
         let () = Test.log("_generates_collection_1_should_works") in
-
-        let x : Factory.parameter contract = Test.to_contract addr in
 
         // prepare arguments for generating a new collection
         let token_ids : nat list = [1n] in
@@ -56,7 +55,7 @@ let test =
         // call GenerateCollection entrypoint
         let () = Test.set_source alice in
         let gencol_args : Factory.Parameter.generate_collection_param = {name="alice_collection_1"; token_ids=token_ids; token_metas=token_metadata} in
-        let _ = Test.transfer_to_contract_exn x (GenerateCollection(gencol_args)) 1000000mutez in
+        let _ = Test.transfer_exn addr (GenerateCollection gencol_args : Factory parameter_of) 1000000mutez in
 
         // verify FA2 has been created
         let s : Factory.storage = Test.get_storage addr in
@@ -82,8 +81,7 @@ let test =
 
         // APPROVE marketplace to transfer token 1
         let () = Test.set_source alice in
-        let marketplace_contract : Marketplace.parameter contract = Test.to_contract marketplace_taddr in
-        let marketplace_addr  = Tezos.address marketplace_contract in 
+        let marketplace_addr  = Test.to_address marketplace_taddr in 
         let fa2_contract : Factory.NFT_FA2.parameter contract = Test.to_contract taddr_fa2_address in
         let update_op = [(Add_operator({owner=alice; operator=marketplace_addr; token_id=1n}) : Factory.NFT_FA2.NFT.unit_update)] in
         let _ = Test.transfer_to_contract_exn fa2_contract (Update_operators(update_op)) 0mutez in
@@ -95,14 +93,14 @@ let test =
             price=1tez;
         } in
         let () = Test.set_source alice in
-        let _ = Test.transfer_to_contract_exn marketplace_contract (Sell(sell_args)) 0mutez in
+        let _ = Test.transfer_exn marketplace_taddr (Create_sell_proposal sell_args : Marketplace parameter_of) 0mutez in
 
         // bob Buy token1
         let buy_args : Marketplace.Parameter.buy_param = { 
             proposal_id=0n;
         } in
         let () = Test.set_source bob in
-        let _ = Test.transfer_to_contract_exn marketplace_contract (Buy(buy_args)) 1000000mutez in
+        let _ = Test.transfer_exn marketplace_taddr (Accept_proposal buy_args : Marketplace parameter_of) 1000000mutez in
 
         let fa2_store_after : ext_fa2_storage = Test.get_storage taddr_fa2_address in
         let () = assert(Factory.NFT_FA2.Storage.is_owner_of fa2_store_after bob 1n) in

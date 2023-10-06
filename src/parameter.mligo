@@ -6,4 +6,4 @@ type generate_collection_param = {
     token_metas : NFT_FA2.NFT.TokenMetadata.t
 }
 
-type t = GenerateCollection of generate_collection_param | Nothing of unit
+type t = generate_collection_param
