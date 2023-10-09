@@ -1,8 +1,11 @@
 
 #import "../src/main.mligo" "Factory"
+#import "../src/storage.mligo" "Storage"
+#import "../src/parameter.mligo" "Parameter"
+#import "../src/generic_fa2/core/instance/NFT.mligo" "NFT_FA2"
 
-type fa2_storage = Factory.NFT_FA2.Storage.t
-type ext = Factory.NFT_FA2.extension
+type fa2_storage = NFT_FA2.Storage.t
+type ext = NFT_FA2.extension
 type ext_fa2_storage = ext fa2_storage
 
 let assert_string_failure (res : test_exec_result) (expected : string) : unit =
@@ -22,17 +25,16 @@ let test =
     let _frank: address = Test.nth_bootstrap_account 3 in
 
     // originate Factory smart contract
-    let init_storage : Factory.Storage.t = { 
-        all_collections=(Big_map.empty : (Factory.Storage.collectionContract, Factory.Storage.collectionOwner) big_map);
-        owned_collections=(Big_map.empty : (Factory.Storage.collectionOwner, Factory.Storage.collectionContract list) big_map);
+    let init_storage : Storage.t = { 
+        all_collections=(Big_map.empty : (Storage.collectionContract, Storage.collectionOwner) big_map);
+        owned_collections=(Big_map.empty : (Storage.collectionOwner, Storage.collectionContract list) big_map);
         metadata=(Big_map.empty: (string, bytes) big_map);
     } in
-    let (addr,_,_) = Test.originate Factory.main init_storage 0tez in
+    let orig = Test.originate_from_file "../src/main.mligo" init_storage 0tez in
+    let addr = orig.addr in
 
     let _generates_collection_1_should_works = 
         let () = Test.log("_generates_collection_1_should_works") in
-
-        let x : Factory.parameter contract = Test.to_contract addr in
 
         // prepare arguments for generating a new collection
         let token_ids : nat list = [1n] in
@@ -40,13 +42,13 @@ let test =
             ("QRcode", 0x623d82eff132);
         ] : (string, bytes) map) in
         let token_metadata = (Big_map.literal [
-            (1n, ({token_id=1n;token_info=token_info_1;} : Factory.NFT_FA2.NFT.TokenMetadata.data));
-        ] : Factory.NFT_FA2.NFT.TokenMetadata.t) in
+            (1n, ({token_id=1n;token_info=token_info_1;} : NFT_FA2.NFT.TokenMetadata.data));
+        ] : NFT_FA2.NFT.TokenMetadata.t) in
 
         // call GenerateCollection entrypoint
         let () = Test.set_source alice in
-        let gencol_args : Factory.Parameter.generate_collection_param = {name="alice_collection_1"; token_ids=token_ids; token_metas=token_metadata} in
-        let _ = Test.transfer_to_contract_exn x (GenerateCollection(gencol_args)) 1000000mutez in
+        let gencol_args : Parameter.generate_collection_param = {name="alice_collection_1"; token_ids=token_ids; token_metas=token_metadata} in
+        let _ = Test.transfer_exn addr (GenerateCollection gencol_args : Factory parameter_of) 1000000mutez in
 
         // verify FA2 has been created
         let s : Factory.storage = Test.get_storage addr in
@@ -94,7 +96,7 @@ let test =
     let _mint_token3_collection_1_should_fail = 
         let () = Test.log("_mint_token3_collection_1_should_fail") in
 
-        let _x : Factory.parameter contract = Test.to_contract addr in
+        let _x = Test.to_contract addr in
 
         // Retrieve address of collection 1
         let s_before : Factory.storage = Test.get_storage addr in
@@ -132,7 +134,7 @@ let test =
         //let colls_before_list : address list = Set.fold (fun(acc, i : address list * address) -> i :: acc) colls_before ([] : address list) in
         let address1 : address = Option.unopt (List.head_opt colls_before) in
 
-        let x : Factory.parameter contract = Test.to_contract addr in
+        let x = Test.to_contract addr in
 
         //let () = Test.log("alice generates a collection 2") in
         let () = Test.set_source alice in

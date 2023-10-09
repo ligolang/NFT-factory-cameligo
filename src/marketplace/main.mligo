@@ -4,10 +4,12 @@
 #import "../generic_fa2/core/instance/NFT.mligo" "NFT_FA2"
 
 type storage = Storage.t
-type parameter = Parameter.t
+type parameter_sell = Parameter.sell_proposal_param
+type parameter_buy = Parameter.buy_param
 type return = operation list * storage
 
-let create_sell_proposal(param, store : Parameter.sell_proposal_param * Storage.t) : return = 
+[@entry]
+let create_sell_proposal(param : parameter_sell) (store : storage) : return = 
     // check if sender is the owner of the nft token
     let balanceOpt : nat option = Tezos.call_view "get_balance" (Tezos.get_sender (), param.token_id) param.collectionContract in
     let balanceVal : nat = match balanceOpt with
@@ -27,8 +29,8 @@ let create_sell_proposal(param, store : Parameter.sell_proposal_param * Storage.
 
     (([] : operation list), { store with next_sell_id=new_next_sell_id; sell_proposals=new_proposals; active_proposals=new_active_proposals })
 
-
-let accept_proposal(param, store : Parameter.buy_param * Storage.t) : return =
+[@entry]
+let accept_proposal(param : parameter_buy) (store : storage) : return =
     let _check_among_active_proposals : unit = assert_with_error (Set.mem param.proposal_id store.active_proposals) Errors.proposal_not_active in 
     let propal : Storage.sell_proposal = match Big_map.find_opt param.proposal_id store.sell_proposals with
     | None -> (failwith(Errors.unknown_proposal) : Storage.sell_proposal)
@@ -59,12 +61,6 @@ let accept_proposal(param, store : Parameter.buy_param * Storage.t) : return =
     let op2 : operation = Tezos.transaction nft_transfer 0mutez collection_transfer_dest in
     
     ([op; op2;], { store with sell_proposals=new_proposals; active_proposals=new_active_proposals })
-
-[@entry]
-let main (ep : parameter) (store : storage) : return =
-    match ep with 
-    | Sell p -> create_sell_proposal(p, store)
-    | Buy p -> accept_proposal(p, store)
 
 [@view] let get_proposal (p : nat) (s : storage) : Storage.sell_proposal = 
       match Big_map.find_opt p s.sell_proposals with 
